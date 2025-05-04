@@ -1,31 +1,31 @@
 package net.no.tnt.griefing.mixin;
 
-import net.minecraft.block.BedBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-import net.minecraft.world.explosion.ExplosionBehavior;
-import net.no.tnt.griefing.NoTNTGriefing;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BedBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(BedBlock.class)
 public class BedBlockMixin {
 
-    @Redirect(method = "onUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;Lnet/minecraft/world/explosion/ExplosionBehavior;Lnet/minecraft/util/math/Vec3d;FZLnet/minecraft/world/World$ExplosionSourceType;)V"))
-    private void injected(World world, Entity entity, DamageSource damageSource, ExplosionBehavior behavior, Vec3d vec3d, float power, boolean createFire, World.ExplosionSourceType explosionSourceType) {
-        if(world instanceof ServerWorld) {
-            GameRules gameRules = world.getServer().getGameRules();
-            if(!gameRules.getBoolean(NoTNTGriefing.BED_GRIEFING)){
-                world.createExplosion(null, world.getDamageSources().badRespawnPoint(vec3d), null, vec3d, 5.0F, false, World.ExplosionSourceType.NONE);
-                return;
+    @ModifyArgs(
+        method = "useWithoutItem",
+        require = 0,
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/damagesource/DamageSource;Lnet/minecraft/world/level/ExplosionDamageCalculator;Lnet/minecraft/world/phys/Vec3;FZLnet/minecraft/world/level/Level$ExplosionInteraction;)Lnet/minecraft/world/level/Explosion;"
+        )
+    )
+    private void modifyExplosionInteraction(Args args) {
+        for (int i = 0; i < args.size(); i++) {
+            Object obj = args.get(i);
+            if (obj instanceof Boolean) {
+                args.set(i, false); // Turn off the explosion particles
+            } else if (obj instanceof Level.ExplosionInteraction) {
+                args.set(i, Level.ExplosionInteraction.NONE); // Turn off the explosion
             }
         }
-        world.createExplosion(null, world.getDamageSources().badRespawnPoint(vec3d), null, vec3d, 5.0F, true, World.ExplosionSourceType.BLOCK);
     }
-
 }

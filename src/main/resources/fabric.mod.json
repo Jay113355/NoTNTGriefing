@@ -2,19 +2,17 @@
   "schemaVersion": 1,
   "id": "notntgriefing",
   "version": "1.0.1",
-
   "name": "No TNT Griefing",
-  "description": "New Anti-Griefing Gamerules for Your Worlds",
+  "description": "New Anti-Griefing Gamerules for Your Worlds (This is a fork)",
   "authors": [
-    "Flooflez"
+    "Flooflez",
+    "Jay113355"
   ],
   "contact": {
-    "sources": "https://github.com/Flooflez/NoTNTGriefing"
+    "sources": "https://github.com/Jay113355/NoTNTGriefing"
   },
-
   "license": "MIT",
   "icon": "assets/no.tnt.griefing/icon.png",
-
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -24,10 +22,9 @@
   "mixins": [
     "no.tnt.griefing.mixins.json"
   ],
-
   "depends": {
-    "fabricloader": ">=0.16.9",
-    "minecraft": "~1.21.4",
+    "fabricloader": ">=0.16.5",
+    "minecraft": "~1.21.1",
     "java": ">=21",
     "fabric-api": "*"
   },
